@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>Текстовый редактор</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Текстовый редактор</h1>
+    <form method="post" id="editor-form">
+        <textarea name="editor" id="editor" rows="20" cols="80" placeholder="Введите текст..."></textarea>
+        <br>
+        <label for="format">Сохранить как:</label>
+        <select name="format" id="format">
+            <option value="txt">.txt</option>
+            <option value="docx">.docx</option>
+            <option value="doc">.doc</option>
+        </select>
+        <button type="submit">Сохранить</button>
+    </form>
+</body>
+</html>
