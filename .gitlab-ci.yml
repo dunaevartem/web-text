@@ -4,53 +4,57 @@ stages:
   - deploy
 
 variables:
+  # Внутренний docker‑двигатель
   DOCKER_DRIVER: overlay2
-  IMAGE_TAG: "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
-  REGISTRY: "$CI_REGISTRY"
+  # Имя образа, который будет держаться только в CI‑runner’е
+  IMAGE_NAME: mytexteditor
+  IMAGE_TAG: "$CI_COMMIT_SHA"
 
+# ---------- 1️⃣ Build stage ----------
 build:
   stage: build
-  image: docker:27
-  tags:
-    - build
+  image: docker:27  # «docker»‑образ с клиентом
   services:
-    - docker:dind
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - docker:dind  # «docker‑in‑docker» – создаём образ локально
   script:
-    - docker build -t "$IMAGE_TAG" .
-    - docker push "$IMAGE_TAG"
-
-
-test:
-  stage: test
-  image: python:3.12-slim
-  tags:
-    - test
-  dependencies:
-    - build
-  script:
-    - pip install -r app/requirements.txt
-    - pip install pytest
-    - pytest tests/
+    # Билдим и сохраняем в tar, чтобы тесты и деплой смогли «загрузить»
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+    - docker save -o $IMAGE_NAME.tar $IMAGE_NAME:$IMAGE_TAG
   tags:
     - docker
 
+# ---------- 2️⃣ Test stage ----------
+test:
+  stage: test
+  image: python:3.12-slim
+  dependencies:
+    - build
+  script:
+    # Загружаем образ, чтобы потом можно было запустить контейнер
+    - docker load -i $IMAGE_NAME.tar
+    # Устанавливаем зависимости и запускаем тесты внутри контейнера
+    - docker run --rm $IMAGE_NAME:$IMAGE_TAG \
+        sh -c "pip install -r app/requirements.txt && pip install pytest && pytest tests/"
+  tags:
+    - docker
+
+# ---------- 3️⃣ Deploy stage ----------
 deploy:
   stage: deploy
   image: python:3.12-slim
-  tags:
-    - deploy
   environment:
     name: production
     url: https://mytexteditor.example.com
   dependencies:
     - build
   script:
-    # Здесь может быть ваш деплой‑скрипт
-    # Пример: запуск контейнера в Kubernetes
-    - echo "Deploying $IMAGE_TAG to production ..."
-    # Например, для k8s:
-    # - kubectl set image deployment/text-editor-deploy web=$IMAGE_TAG
+    # 1) Загружаем образ (если не в тесте)
+    - docker load -i $IMAGE_NAME.tar
+    # 2) Отправляем его на удалённый Docker‑host (или на Kubernetes)
+    - echo "Deploying $IMAGE_NAME:$IMAGE_TAG to production ..."
+    # Пример для удалённого Docker‑host через ssh:
+    - ssh $PROD_USER@$PROD_HOST "docker load -i /tmp/$IMAGE_NAME.tar && docker run -d -p 80:80 --name mytexteditor $IMAGE_NAME:$IMAGE_TAG"
   only:
     - main
+  tags:
+    - docker
