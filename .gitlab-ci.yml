@@ -21,7 +21,7 @@ build:
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
     - docker save -o $IMAGE_NAME.tar $IMAGE_NAME:$IMAGE_TAG
   tags:
-    - docker
+    - build
 
 # ---------- 2️⃣ Test stage ----------
 test:
@@ -36,7 +36,7 @@ test:
     - docker run --rm $IMAGE_NAME:$IMAGE_TAG \
         sh -c "pip install -r app/requirements.txt && pip install pytest && pytest tests/"
   tags:
-    - docker
+    - test
 
 # ---------- 3️⃣ Deploy stage ----------
 deploy:
@@ -57,4 +57,4 @@ deploy:
   only:
     - main
   tags:
-    - docker
+    - deploy
