@@ -20,6 +20,10 @@ build:
     # Билдим и сохраняем в tar, чтобы тесты и деплой смогли «загрузить»
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
     - docker save -o $IMAGE_NAME.tar $IMAGE_NAME:$IMAGE_TAG
+    artifacts:
+    # Делаем tar‑файл доступным для следующих job‑ов
+  paths:
+    - ${IMAGE_NAME}.tar
   tags:
     - build
 
