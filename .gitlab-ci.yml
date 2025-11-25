@@ -26,6 +26,8 @@ build:
     - ${IMAGE_NAME}.tar
   tags:
     - build
+  env:
+    DOCKER_HOST=unix:///var/run/docker.sock
 
 # ---------- 2️⃣ Test stage ----------
 test:
