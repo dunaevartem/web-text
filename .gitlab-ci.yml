@@ -18,6 +18,7 @@ build:
     - name: docker:dind  # «docker‑in‑docker» – создаём образ локально
       alias: docker   
   script:
+    - unset DOCKER_HOST
     # Билдим и сохраняем в tar, чтобы тесты и деплой смогли «загрузить»
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
     - docker save -o $IMAGE_NAME.tar $IMAGE_NAME:$IMAGE_TAG
