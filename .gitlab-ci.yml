@@ -16,6 +16,8 @@ build:
   image: docker:27  # «docker»‑образ с клиентом
   services:
     - name: docker:dind  # «docker‑in‑docker» – создаём образ локально 
+      alias: docker  
+      privileged: true
   script:
     - docker info
     # Билдим и сохраняем в tar, чтобы тесты и деплой смогли «загрузить»
