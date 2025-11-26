@@ -14,9 +14,9 @@ variables:
 build:
   stage: build
   image: docker:27  # «docker»‑образ с клиентом
-  services:
-    - name: docker:dind  # «docker‑in‑docker» – создаём образ локально
-      alias: docker   
+#  services:
+#    - name: docker:dind  # «docker‑in‑docker» – создаём образ локально
+#      alias: docker   
   script:
     # Билдим и сохраняем в tar, чтобы тесты и деплой смогли «загрузить»
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
