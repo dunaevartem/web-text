@@ -9,7 +9,6 @@ variables:
   # Имя образа, который будет держаться только в CI‑runner’е
   IMAGE_NAME: mytexteditor
   IMAGE_TAG: "$CI_COMMIT_SHA"
-  DOCKER_HOST=tcp: "tcp://localhost:2375"
 
 # ---------- 1️⃣ Build stage ----------
 build:
@@ -18,6 +17,7 @@ build:
   services:
     - name: docker:dind  # «docker‑in‑docker» – создаём образ локально 
   script:
+    - docker info
     # Билдим и сохраняем в tar, чтобы тесты и деплой смогли «загрузить»
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
     - docker save -o $IMAGE_NAME.tar $IMAGE_NAME:$IMAGE_TAG
