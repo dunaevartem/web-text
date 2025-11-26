@@ -14,11 +14,8 @@ variables:
 build:
   stage: build
   image: docker:27  # «docker»‑образ с клиентом
-#  services:
-#    - name: docker:dind  # «docker‑in‑docker» – создаём образ локально 
-  before_script:
-    # Перенаправляем Docker‑CLI к сокету хоста
-    - export DOCKER_HOST=unix:///var/run/docker.sock
+  services:
+    - name: docker:dind  # «docker‑in‑docker» – создаём образ локально 
   script:
     # Билдим и сохраняем в tar, чтобы тесты и деплой смогли «загрузить»
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
