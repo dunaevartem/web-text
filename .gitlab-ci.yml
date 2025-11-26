@@ -10,13 +10,12 @@ variables:
   IMAGE_NAME: mytexteditor
   IMAGE_TAG: "$CI_COMMIT_SHA"
 
-runner:
-  executor: docker
-
 # ---------- 1️⃣ Build stage ----------
 build:
   stage: build
   image: docker:27  # «docker»‑образ с клиентом
+  runner:
+    executor: docker
   services:
     - name: docker:dind  # «docker‑in‑docker» – создаём образ локально 
   script:
