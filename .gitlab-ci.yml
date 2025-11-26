@@ -9,6 +9,7 @@ variables:
   # Имя образа, который будет держаться только в CI‑runner’е
   IMAGE_NAME: mytexteditor
   IMAGE_TAG: "$CI_COMMIT_SHA"
+  DOCKER_HOST=tcp://localhost:2375
 
 # ---------- 1️⃣ Build stage ----------
 build:
