@@ -9,6 +9,8 @@ variables:
   # Имя образа, который будет держаться только в CI‑runner’е
   IMAGE_NAME: mytexteditor
   IMAGE_TAG: "$CI_COMMIT_SHA"
+  DOCKER_TLS_CERTDIR: ""
+privileged: true
 
 # ---------- 1️⃣ Build stage ----------
 build:
