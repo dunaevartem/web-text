@@ -10,7 +10,6 @@ variables:
   IMAGE_NAME: mytexteditor
   IMAGE_TAG: "$CI_COMMIT_SHA"
   DOCKER_TLS_CERTDIR: ""
-privileged: true
 
 # ---------- 1️⃣ Build stage ----------
 build:
