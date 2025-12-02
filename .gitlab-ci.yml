@@ -9,7 +9,7 @@ variables:
   # Имя образа, который будет держаться только в CI‑runner’е
   IMAGE_NAME: mytexteditor
   IMAGE_TAG: "$CI_COMMIT_SHA"
-  DOCKER_TLS_CERTDIR: ""
+  DOCKER_TLS_CERTDIR: "" # Выключаете сертификаты, чтобы docker:dind работал без TLS.
 
 # ---------- 1️⃣ Build stage ----------
 build:
