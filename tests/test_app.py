@@ -13,7 +13,7 @@ def client():
 def test_get_index(client):
     rv = client.get("/")
     assert rv.status_code == 200
-    assert b"Текстовый редактор" in rv.data
+    assert b"Текстовый редактор" in rv.data.decode()
 
 def test_save_txt(client):
     data = {"editor": "Привет, мир!", "format": "txt"}
