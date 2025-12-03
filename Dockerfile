@@ -17,6 +17,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Копируем всё приложение
 COPY app/ .
 
+# Копируем все тесты
+COPY tests/ tests/
+
 # Экспонируем порт
 EXPOSE 5000
 
