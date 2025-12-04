@@ -24,4 +24,4 @@ COPY tests /app/tests
 EXPOSE 5000
 
 # Запускаем
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "main:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app.main:app"]
