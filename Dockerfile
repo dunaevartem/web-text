@@ -12,10 +12,10 @@ WORKDIR /app
 
 # Копируем требования и устанавливаем
 COPY app/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt --root-user-action ignore
 
 # Копируем всё приложение
-COPY app /app/app
+COPY app /app
 
 # Копируем все тесты
 COPY tests /app/tests
