@@ -10,17 +10,11 @@ RUN apt-get update && \
 # Создаём рабочий каталог
 WORKDIR /app
 
-# Копируем требования и устанавливаем
-COPY app/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt --root-user-action ignore
-
 # Копируем всё приложение
-COPY app /app
+COPY . .
 
-RUN mkdir -p /app/app && touch /app/app/__init__.py
-
-# Копируем все тесты
-COPY tests /app/tests
+# Устанавливаем зависимости Python (файл находится в app/requirements.txt)
+RUN pip install --no-cache-dir -r app/requirements.txt --root-user-action ignore
 
 # Экспонируем порт
 EXPOSE 5000
