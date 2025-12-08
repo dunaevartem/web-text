@@ -17,6 +17,8 @@ RUN pip install --no-cache-dir -r requirements.txt --root-user-action ignore
 # Копируем всё приложение
 COPY app /app
 
+RUN touch /app/__init__.py
+
 # Копируем все тесты
 COPY tests /app/tests
 
