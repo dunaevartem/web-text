@@ -41,7 +41,7 @@ test:
     # Загружаем образ, чтобы потом можно было запустить контейнер
     - docker load -i $IMAGE_NAME.tar
     # Устанавливаем зависимости и запускаем тесты внутри контейнера
-    - docker run --rm $IMAGE_NAME:$IMAGE_TAG /bin/sh -c "pip install -r requirements.txt && pip install pytest && pytest tests/"
+    - docker run --rm -w /app $IMAGE_NAME:$IMAGE_TAG /bin/sh -c "pip install -r requirements.txt && pip install pytest && pytest tests/"
   tags:
     - test
 
