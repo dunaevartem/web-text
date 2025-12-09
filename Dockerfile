@@ -16,6 +16,9 @@ COPY . .
 # Устанавливаем зависимости Python (файл находится в app/requirements.txt)
 RUN pip install --no-cache-dir -r app/requirements.txt --root-user-action ignore
 
+# фиксируем PYTHONPATH
+ENV PYTHONPATH=/app
+
 # Экспонируем порт
 EXPOSE 5000
 
