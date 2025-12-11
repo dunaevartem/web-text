@@ -51,7 +51,7 @@ deploy:
   image: docker:27
   environment:
     name: production
-    url: https://192.168.1.50
+    url: http://192.168.1.50
   dependencies:
     - build
   script:
