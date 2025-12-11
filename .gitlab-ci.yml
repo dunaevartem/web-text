@@ -54,6 +54,10 @@ deploy:
     url: http://192.168.1.50
   dependencies:
     - build
+  before_script:
+    - mkdir -p ~/.ssh
+    - echo "$PROD_SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
   script:
     # 1) Загружаем образ (если не в тесте)
     - docker load -i $IMAGE_NAME.tar
