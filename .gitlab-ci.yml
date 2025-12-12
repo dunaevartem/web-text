@@ -77,7 +77,7 @@ deploy:
     # 2) Отправляем его на удалённый Docker‑host (или на Kubernetes)
     - echo "Deploying $IMAGE_NAME:$IMAGE_TAG to production ..."
     # Пример для удалённого Docker‑host через ssh:
-    - cat $IMAGE_NAME.tar |- ssh $PROD_USER@$PROD_HOST "docker load -i - && docker run -d -p 80:80 --name mytexteditor $IMAGE_NAME:$IMAGE_TAG"
+    - cat $IMAGE_NAME.tar | ssh $PROD_USER@$PROD_HOST "docker load -i - && docker run -d -p 80:80 --name mytexteditor $IMAGE_NAME:$IMAGE_TAG"
   only:
     - main
   tags:
