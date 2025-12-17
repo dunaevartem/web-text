@@ -55,7 +55,7 @@ deploy:
   script:
     - docker load -i $IMAGE_NAME.tar    # Загружаем образ (если не в тесте)
     - echo "Deploying $IMAGE_NAME:$IMAGE_TAG to production ..."     # Отправляем его на удалённый Docker‑host (или на Kubernetes)
-    - cat $IMAGE_NAME.tar | ssh $PROD_USER@$PROD_HOST "sudo docker load && sudo docker run -d -p 5000:5000 --name mytexteditor $IMAGE_NAME:$IMAGE_TAG" # Запускаем контейнер на хосте
+    - cat $IMAGE_NAME.tar | ssh $PROD_USER@$PROD_HOST "sudo docker rm -f mytexteditor || true && sudo docker load && sudo docker run -d -p 5000:5000 --name mytexteditor $IMAGE_NAME:$IMAGE_TAG" # Запускаем контейнер на хосте
   only:
     - main
   tags:
