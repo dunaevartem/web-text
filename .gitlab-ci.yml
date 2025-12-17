@@ -48,11 +48,10 @@ deploy:
   before_script:
     - eval $(ssh-agent -s)  # Запускаем ssh‑agent
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - # Добавляем приватный ключ, который уже хранится в CI‑Variable
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - # Убираем возможные carriage‑returns из строки ключа
     - mkdir -p ~/.ssh   # Создаём каталог .ssh, если его ещё нет
-    - chmod 700 ~/.ssh
+    - chmod 700 ~/.ssh # Создаём права на каталог .ssh
     - ssh-keyscan -H $PROD_HOST >> ~/.ssh/known_hosts  # Записываем ключ сервера в known_hosts
-    - chmod 600 ~/.ssh/known_hosts
+    - chmod 600 ~/.ssh/known_hosts # Создаём права на каталог known_hosts
   script:
     - docker load -i $IMAGE_NAME.tar    # Загружаем образ (если не в тесте)
     - echo "Deploying $IMAGE_NAME:$IMAGE_TAG to production ..."     # Отправляем его на удалённый Docker‑host (или на Kubernetes)
