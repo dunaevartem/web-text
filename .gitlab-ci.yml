@@ -7,45 +7,36 @@ services:
   - name: docker:dind  # «docker‑in‑docker» – создаём образ локально 
     alias: docker  
 variables:
-  # Внутренний docker‑двигатель
-  DOCKER_DRIVER: overlay2
-  # Имя образа, который будет держаться только в CI‑runner’е
-  IMAGE_NAME: mytexteditor
+  DOCKER_DRIVER: overlay2 # Внутренний docker‑двигатель
+  IMAGE_NAME: mytexteditor # Имя образа, который будет держаться только в CI‑runner’е
   IMAGE_TAG: "$CI_COMMIT_SHA"
   DOCKER_TLS_CERTDIR: "" # Выключаете сертификаты, чтобы docker:dind работал без TLS.
 
-# ---------- 1️⃣ Build stage ----------
 build:
   stage: build
   image: docker:27  # «docker»‑образ с клиентом
   script:
     - docker info
-    # Билдим и сохраняем в tar, чтобы тесты и деплой смогли «загрузить»
-    - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG .  # Билдим и сохраняем в tar, чтобы тесты и деплой смогли «загрузить»
     - docker save -o $IMAGE_NAME.tar $IMAGE_NAME:$IMAGE_TAG
     - ls -lh $IMAGE_NAME.tar   # проверяем размер
   artifacts:
-    # Делаем tar‑файл доступным для следующих job‑ов
     paths:
-    - ${IMAGE_NAME}.tar
+    - ${IMAGE_NAME}.tar  # Делаем tar‑файл доступным для следующих job‑ов
   tags:
     - build
 
-# ---------- 2️⃣ Test stage ----------
 test:
   stage: test
   image: docker:27
   dependencies:
     - build
   script:
-    # Загружаем образ, чтобы потом можно было запустить контейнер
-    - docker load -i $IMAGE_NAME.tar
-    # Устанавливаем зависимости и запускаем тесты внутри контейнера
-    - docker run --rm -w /app $IMAGE_NAME:$IMAGE_TAG /bin/sh -c "pip install pytest && pytest tests/"
+    - docker load -i $IMAGE_NAME.tar # Загружаем образ, чтобы потом можно было запустить контейнер
+    - docker run --rm -w /app $IMAGE_NAME:$IMAGE_TAG /bin/sh -c "pip install pytest && pytest tests/" # Устанавливаем зависимости и запускаем тесты внутри контейнера
   tags:
     - test
 
-# ---------- 3️⃣ Deploy stage ----------
 deploy:
   stage: deploy
   image: docker:27
@@ -55,29 +46,17 @@ deploy:
   dependencies:
     - build
   before_script:
-  # 1️⃣  Запускаем ssh‑agent
-    - eval $(ssh-agent -s)
-
-  # 2️⃣  Добавляем приватный ключ, который уже хранится в CI‑Variable
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-
-  # 2️⃣½  Убираем возможные carriage‑returns из строки ключа
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-
-  # 3️⃣  Создаём каталог .ssh, если его ещё нет
-    - mkdir -p ~/.ssh
+    - eval $(ssh-agent -s)  # Запускаем ssh‑agent
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - # Добавляем приватный ключ, который уже хранится в CI‑Variable
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - # Убираем возможные carriage‑returns из строки ключа
+    - mkdir -p ~/.ssh   # Создаём каталог .ssh, если его ещё нет
     - chmod 700 ~/.ssh
-
-  # 4️⃣  Записываем ключ сервера в known_hosts
-    - ssh-keyscan -H $PROD_HOST >> ~/.ssh/known_hosts
+    - ssh-keyscan -H $PROD_HOST >> ~/.ssh/known_hosts  # Записываем ключ сервера в known_hosts
     - chmod 600 ~/.ssh/known_hosts
   script:
-    # 1) Загружаем образ (если не в тесте)
-    - docker load -i $IMAGE_NAME.tar
-    # 2) Отправляем его на удалённый Docker‑host (или на Kubernetes)
-    - echo "Deploying $IMAGE_NAME:$IMAGE_TAG to production ..."
-    # Пример для удалённого Docker‑host через ssh:
-    - cat $IMAGE_NAME.tar | ssh $PROD_USER@$PROD_HOST "sudo docker load && sudo docker run -d -p 5000:5000 --name mytexteditor $IMAGE_NAME:$IMAGE_TAG"
+    - docker load -i $IMAGE_NAME.tar    # Загружаем образ (если не в тесте)
+    - echo "Deploying $IMAGE_NAME:$IMAGE_TAG to production ..."     # Отправляем его на удалённый Docker‑host (или на Kubernetes)
+    - cat $IMAGE_NAME.tar | ssh $PROD_USER@$PROD_HOST "sudo docker load && sudo docker run -d -p 5000:5000 --name mytexteditor $IMAGE_NAME:$IMAGE_TAG" # Запускаем контейнер на хосте
   only:
     - main
   tags:
